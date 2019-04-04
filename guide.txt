@@ -1,0 +1,15 @@
+----------------------------------------------------
+1. virtual memory is provided by addresses.txt
+2. virtual memory is split up into two parts
+   (Page# and offset)
+3. try and see if the PAGE # results in a TLB hit
+4. if it does, then no memory access is required
+   	  construct the new phisical address using
+	  the original offset as well as the PPN
+	  (physical page number) in the TLB
+
+5. if there is a TLB Miss, check the PTEs and look for the page number there.
+6. If theres a match use the original offset as well as the page number found in the PTE.
+
+7. If both tables miss, we hae a page fault, so read a 256 byte page from backing_store.bin and update the page table
+-----------------------------------------------------

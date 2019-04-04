@@ -1,0 +1,37 @@
+#ifndef PTE_H_
+#define PTE_H_
+
+#define PT_ENTRIES 128
+
+//128 entries
+typedef struct page_table page_table;
+struct page_table{
+	int PTE[PT_ENTRIES];
+
+};
+
+//convert to phyiscal address using PTE only
+//output the results of PTE hit or miss
+void convert_addr_PTE() {
+	
+
+}
+
+//start with this one
+int page_num_in_PTE(page_table* current_table, int page_number) {
+	int i;
+	for(i = 0; i < PT_ENTRIES; i++) {
+		
+		if(page_number == current_table->PTE[i]) {
+			return 1;
+		}
+		else {
+			return 0;
+		}
+	}
+	
+}
+
+
+
+#endif
