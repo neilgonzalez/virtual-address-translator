@@ -4,21 +4,13 @@
 
 #define ARGC_ERROR 1
 #define FILE_ERROR 2
-#define TLB_ENTRIES_ROWS 16
-#define TLB_ENTRIES_COLUMNS 2
 
 size_t get_page(size_t x, size_t len, size_t n);
 size_t get_offset(size_t x, size_t len, size_t n);
 void getpage_offset(unsigned int x);
 
 #include "PTE.h"
-
-//16 entries, use the FIFO algo later
-typedef struct TLB TLB;
-struct TLB {
-	int VPN_PPE[TLB_ENTRIES_ROWS][TLB_ENTRIES_COLUMNS];
-
-};
+#include "TLB.h"
 
 
 //idf the page number is ni neither the page talbe nor the TLB
@@ -66,16 +58,20 @@ int main (int argc, char* argv[]) {
 		fprintf(stderr, "could not open file: \'%s\'%n");
 		exit(FILE_ERROR);
 	}
+	page_table pt;
 
 	char buf[BUFLEN];
 	memset(buf, 0, sizeof(buf));
+	//current line num
+	int counter = 0;
 	//convert string addresses to ints
 	while (fgets(buf, BUFLEN, fp) != NULL) {
 		buf[strlen(buf) - 1] = '\0';
 		int x = atoi(buf);
 		printf("\'%s\' is  %d\n", buf, x);
-		PTE_worker(x);
-		
+		PTE_worker(&pt, x, &counter);
+		//for each line, counter goes up
+		counter++;
 	}
 	
 	fclose(fp);
