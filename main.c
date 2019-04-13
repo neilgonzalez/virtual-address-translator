@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define ARGC_ERROR 1
 #define FILE_ERROR 2
@@ -9,17 +10,12 @@ size_t get_page(size_t x, size_t len, size_t n);
 size_t get_offset(size_t x, size_t len, size_t n);
 void getpage_offset(unsigned int x);
 
-#include "PTE.h"
+#include "data.h"
 #include "TLB.h"
+#include "PTE.h"
 
-
-//idf the page number is ni neither the page talbe nor the TLB
-void page_fault(page_table* current_table, char* drive){
-	//retrieve from disk
-	
-
-}
-
+void tlb_stats(TLB*);
+void pte_stats(page_table*);
 
 size_t get_page(size_t x, size_t len, size_t n) { 
     /*size_t mask = ~0 << (len - n);
@@ -59,6 +55,7 @@ int main (int argc, char* argv[]) {
 		exit(FILE_ERROR);
 	}
 	page_table pt;
+	TLB tlb;
 
 	char buf[BUFLEN];
 	memset(buf, 0, sizeof(buf));
@@ -68,29 +65,30 @@ int main (int argc, char* argv[]) {
 	while (fgets(buf, BUFLEN, fp) != NULL) {
 		buf[strlen(buf) - 1] = '\0';
 		int x = atoi(buf);
-		printf("\'%s\' is  %d\n", buf, x);
-		PTE_worker(&pt, x, &counter);
+		//printf("\'%s\' is  %d\n", buf, x);
+		int addr = PTE_worker(&pt, x, &counter);
+		TLB_worker(&tlb, addr);
 		//for each line, counter goes up
 		counter++;
 	}
-	
 	fclose(fp);
 	printf("\n\t...done\n");
 	
-	/*
-	getpage_offset(1);
-	for(int i = 0; i < 256; i++) {
-		getpage_offset(256 * i);
-	}
-	*/
+	tlb_stats(&tlb);
+	pte_stats(&pt);
 	
-	/*
-	getpage_offset(256);
-	
-	getpage_offset(32768);
-	getpage_offset(128);
-	getpage_offset(65534);
-	getpage_offset(33153);
-	*/
 
 }
+
+
+	
+	void tlb_stats(TLB* tlb) { 
+		printf("number of tlb hits: %d\n", tlb -> hits);
+		printf("number of tlb misses: %d\n", tlb-> misses);
+	}
+
+	void pte_stats(page_table* pte) { 
+		printf("number of pte hits: %d\n", pte -> hits);
+		printf("number of pte misses: %d\n", pte -> misses);
+	}
+
